@@ -26,21 +26,21 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* 1. Dynamic Backgrounds */
+        /* 1. Dynamic Backgrounds - Fixed Layer Dimensions */
         .background {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             transition: filter 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-            z-index: -1;
+            z-index: 1; /* Moved up to guarantee visibility context */
         }
 
-        /* Soft vignette overlay for cinematic depth */
+        /* Fixed Vignette Stack Hierarchy */
         .background::after {
             content: '';
             position: absolute;
@@ -48,7 +48,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.4) 100%);
+            background: radial-gradient(circle, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.45) 100%);
+            z-index: 2;
         }
 
         @media (min-width: 769px) {
@@ -59,6 +60,7 @@
             .background { background-image: url('assets/bg-mobile.jpg'); }
         }
 
+        /* Main Content wrapper moved to top layer stacking index */
         .wrapper {
             display: flex;
             justify-content: center;
@@ -67,6 +69,7 @@
             height: 100%;
             padding: 24px;
             position: relative;
+            z-index: 10; 
         }
 
         /* 2. Minimalistic Envelope Styling */
@@ -115,7 +118,7 @@
             top: 45%;
             transform: rotate(-45deg);
             animation: elegantPulse 2s infinite ease-in-out;
-            z-index: 2;
+            z-index: 3;
         }
 
         .heart::before, .heart::after {
@@ -141,8 +144,7 @@
             position: absolute;
             width: 460px;
             min-height: 280px;
-            /* Ultra-premium glassmorphism with a soft sky blue tint */
-            background: rgba(240, 249, 255, 0.75); 
+            background: rgba(240, 249, 255, 0.78); 
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.6);
@@ -202,6 +204,7 @@
 </head>
 <body>
 
+    <!-- Target Element -->
     <div class="background" id="bg"></div>
 
     <div class="wrapper">
@@ -220,14 +223,7 @@
     </div>
 
     <script>
-        // =======================================================
-        // ====== 🖋️ EDIT YOUR DAILY MESSAGE INSIDE HERE 🖋️ ======
-        // =======================================================
-        
-        const dailyMessage = "As a fellow software engineer this one of the smallest gestures I can show you. This is just the beginning of us and I wanna make this one count. I LOVE YOU SHAR ";
-        
-        // =======================================================
-        // =======================================================
+        const dailyMessage = "As a fellow software engineer this is one of the smallest gestures I can show you. This is just the beginning of us and I wanna make this one count. I LOVE YOU SHAR ";
 
         document.getElementById('messageText').textContent = dailyMessage;
 
@@ -238,8 +234,8 @@
 
             envelope.classList.add('hidden');
             
-            // Premium background softening
-            bg.style.filter = "blur(6px) brightness(0.9)";
+            // Optimized rendering engine transition
+            bg.style.filter = "blur(6px) brightness(0.85)";
 
             setTimeout(() => {
                 envelope.style.display = 'none';
