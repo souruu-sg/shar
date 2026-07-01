@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>For Shar ❤️</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+
     <style>
         /* Reset & Layout Fixes */
         * {
@@ -16,11 +21,12 @@
             height: 100%;
             width: 100%;
             overflow: hidden;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: #0f172a;
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0f19;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* 1. Dynamic Backgrounds using Media Queries */
+        /* 1. Dynamic Backgrounds */
         .background {
             position: fixed;
             top: 0;
@@ -30,11 +36,11 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            transition: filter 0.5s ease;
+            transition: filter 0.6s cubic-bezier(0.25, 1, 0.5, 1);
             z-index: -1;
         }
 
-        /* Soft overlay to make the foreground elements pop */
+        /* Soft vignette overlay for cinematic depth */
         .background::after {
             content: '';
             position: absolute;
@@ -42,163 +48,154 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.2); 
+            background: radial-gradient(circle, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.4) 100%);
         }
 
-        /* Laptop View Background */
         @media (min-width: 769px) {
-            .background {
-                background-image: url('assets/bg-desktop.JPG');
-            }
+            .background { background-image: url('assets/bg-desktop.JPG'); }
         }
 
-        /* Mobile View Background */
         @media (max-width: 768px) {
-            .background {
-                background-image: url('assets/bg-mobile.JPG');
-            }
+            .background { background-image: url('assets/bg-mobile.JPG'); }
         }
 
-        /* Container to center everything perfectly */
         .wrapper {
             display: flex;
             justify-content: center;
             align-items: center;
             width: 100%;
             height: 100%;
-            padding: 20px;
+            padding: 24px;
             position: relative;
         }
 
-        /* 2. Envelope Styling */
+        /* 2. Minimalistic Envelope Styling */
         .envelope-container {
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
         }
 
         .envelope-container:hover {
-            transform: scale(1.1);
+            transform: scale(1.05);
         }
 
-        /* The Envelope Base Shape */
         .envelope {
-            width: 130px;
-            height: 90px;
-            background: #f8fafc;
-            border-radius: 8px;
+            width: 120px;
+            height: 80px;
+            background: #ffffff;
+            border-radius: 4px;
             position: relative;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        /* Envelope Flap */
+        /* Minimalistic Flat Flap */
         .envelope::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
-            border-left: 65px solid transparent;
-            border-right: 65px solid transparent;
-            border-top: 48px solid #e2e8f0;
-            border-radius: 8px 8px 0 0;
-            transform-origin: top;
+            border-left: 60px solid transparent;
+            border-right: 60px solid transparent;
+            border-top: 42px solid #f1f5f9;
+            border-radius: 4px 4px 0 0;
         }
 
-        /* Cute Pulsing Heart on the Flap */
+        /* Classy Heart Indicator */
         .heart {
-            width: 30px;
-            height: 30px;
-            background-color: #ef4444;
+            width: 22px;
+            height: 22px;
+            background-color: #e11d48;
             position: absolute;
-            top: 40%;
+            top: 45%;
             transform: rotate(-45deg);
-            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.4);
-            animation: pulse 1.4s infinite;
+            animation: elegantPulse 2s infinite ease-in-out;
             z-index: 2;
         }
 
         .heart::before, .heart::after {
             content: "";
-            background-color: #ef4444;
+            background-color: #e11d48;
             border-radius: 50%;
             position: absolute;
-            width: 30px;
-            height: 30px;
+            width: 22px;
+            height: 22px;
         }
 
-        .heart::before { top: -15px; left: 0; }
-        .heart::after { left: 15px; top: 0; }
+        .heart::before { top: -11px; left: 0; }
+        .heart::after { left: 11px; top: 0; }
 
-        @keyframes pulse {
-            0% { transform: scale(0.95) rotate(-45deg); }
-            70% { transform: scale(1.1) rotate(-45deg); }
-            100% { transform: scale(0.95) rotate(-45deg); }
+        @keyframes elegantPulse {
+            0% { transform: scale(0.95) rotate(-45deg); opacity: 0.9; }
+            50% { transform: scale(1.08) rotate(-45deg); opacity: 1; }
+            100% { transform: scale(0.95) rotate(-45deg); opacity: 0.9; }
         }
 
-        /* 3. Sky Blue Dialogue Box (Hidden initially) */
+        /* 3. Classy Frosted Sky-Blue Dialogue Box */
         .dialogue-box {
             position: absolute;
-            width: 450px;
-            height: 300px;
-            /* Translucent Sky Blue to Light Blue Gradient */
-            background: linear-gradient(135deg, rgba(186, 230, 253, 0.75), rgba(125, 211, 252, 0.75));
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: 20px;
-            padding: 35px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            color: #0369a1; /* Darker blue text for clear contrast and readability */
+            width: 460px;
+            min-height: 280px;
+            /* Ultra-premium glassmorphism with a soft sky blue tint */
+            background: rgba(240, 249, 255, 0.75); 
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255,255,255,0.5);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
             opacity: 0;
-            transform: scale(0.7);
+            transform: translateY(20px) scale(0.95);
             pointer-events: none;
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* Responsive width handling for mobile screens */
         @media (max-width: 480px) {
             .dialogue-box {
-                width: 90%;
-                height: 320px;
-                padding: 25px;
+                width: 92%;
+                padding: 32px 24px;
             }
         }
 
-        /* Typography */
+        /* Typography Styles */
         h1 {
-            font-size: 2rem;
-            margin-bottom: 15px;
-            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #0f172a;
             letter-spacing: -0.5px;
-            color: #0c4a6e;
         }
 
         p {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            line-height: 1.65;
+            font-weight: 400;
+            color: #334155;
+            letter-spacing: -0.1px;
         }
 
-        /* Utility Classes for JavaScript Toggle */
+        /* Animation States */
         .hidden {
             opacity: 0 !important;
-            transform: scale(0.5) !important;
+            transform: scale(0.9) !important;
             pointer-events: none !important;
         }
 
         .show-box {
             opacity: 1 !important;
-            transform: scale(1) !important;
+            transform: translateY(0) scale(1) !important;
             pointer-events: auto !important;
         }
     </style>
@@ -227,27 +224,23 @@
         // ====== 🖋️ EDIT YOUR DAILY MESSAGE INSIDE HERE 🖋️ ======
         // =======================================================
         
-        const dailyMessage = "As a fellow software engineer this one of the smallest gestures I can show you. I know there have been people who have had much grand gestures but I promise you to not break your heart and take care of you and your feelings. I LOVE YOU SHAR";
+        const dailyMessage = "As a fellow software engineer this one of the smallest gestures I can show you. This is just the beginning of us and I wanna make this one count. I LOVE YOU SHAR";
         
         // =======================================================
         // =======================================================
 
-        // Automatically inject your message into the layout
         document.getElementById('messageText').textContent = dailyMessage;
 
-        // Function that handles the opening animation sequence
         function openLetter() {
             const envelope = document.getElementById('envelopeContainer');
             const box = document.getElementById('dialogueBox');
             const bg = document.getElementById('bg');
 
-            // Fade out the envelope
             envelope.classList.add('hidden');
             
-            // Softly blur the background collage slightly so text stands out perfectly
-            bg.style.filter = "blur(4px)";
+            // Premium background softening
+            bg.style.filter = "blur(6px) brightness(0.9)";
 
-            // Bring the gorgeous sky blue letter into view
             setTimeout(() => {
                 envelope.style.display = 'none';
                 box.classList.add('show-box');
