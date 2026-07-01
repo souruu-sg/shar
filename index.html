@@ -1,1 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Shar ❤️</title>
+    <style>
+        /* Reset & Layout Fixes */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body, html {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0f172a;
+        }
+
+        /* 1. Dynamic Backgrounds using Media Queries */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: filter 0.5s ease;
+            z-index: -1;
+        }
+
+        /* Soft overlay to make the foreground elements pop */
+        .background::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.2); 
+        }
+
+        /* Laptop View Background */
+        @media (min-width: 769px) {
+            .background {
+                background-image: url('assets/bg-desktop.jpg');
+            }
+        }
+
+        /* Mobile View Background */
+        @media (max-width: 768px) {
+            .background {
+                background-image: url('assets/bg-mobile.jpg');
+            }
+        }
+
+        /* Container to center everything perfectly */
+        .wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* 2. Envelope Styling */
+        .envelope-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+        }
+
+        .envelope-container:hover {
+            transform: scale(1.1);
+        }
+
+        /* The Envelope Base Shape */
+        .envelope {
+            width: 130px;
+            height: 90px;
+            background: #f8fafc;
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Envelope Flap */
+        .envelope::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-left: 65px solid transparent;
+            border-right: 65px solid transparent;
+            border-top: 48px solid #e2e8f0;
+            border-radius: 8px 8px 0 0;
+            transform-origin: top;
+        }
+
+        /* Cute Pulsing Heart on the Flap */
+        .heart {
+            width: 30px;
+            height: 30px;
+            background-color: #ef4444;
+            position: absolute;
+            top: 40%;
+            transform: rotate(-45deg);
+            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.4);
+            animation: pulse 1.4s infinite;
+            z-index: 2;
+        }
+
+        .heart::before, .heart::after {
+            content: "";
+            background-color: #ef4444;
+            border-radius: 50%;
+            position: absolute;
+            width: 30px;
+            height: 30px;
+        }
+
+        .heart::before { top: -15px; left: 0; }
+        .heart::after { left: 15px; top: 0; }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95) rotate(-45deg); }
+            70% { transform: scale(1.1) rotate(-45deg); }
+            100% { transform: scale(0.95) rotate(-45deg); }
+        }
+
+        /* 3. Sky Blue Dialogue Box (Hidden initially) */
+        .dialogue-box {
+            position: absolute;
+            width: 450px;
+            height: 300px;
+            /* Translucent Sky Blue to Light Blue Gradient */
+            background: linear-gradient(135deg, rgba(186, 230, 253, 0.75), rgba(125, 211, 252, 0.75));
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            color: #0369a1; /* Darker blue text for clear contrast and readability */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            opacity: 0;
+            transform: scale(0.7);
+            pointer-events: none;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Responsive width handling for mobile screens */
+        @media (max-width: 480px) {
+            .dialogue-box {
+                width: 90%;
+                height: 320px;
+                padding: 25px;
+            }
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #0c4a6e;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        /* Utility Classes for JavaScript Toggle */
+        .hidden {
+            opacity: 0 !important;
+            transform: scale(0.5) !important;
+            pointer-events: none !important;
+        }
+
+        .show-box {
+            opacity: 1 !important;
+            transform: scale(1) !important;
+            pointer-events: auto !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background" id="bg"></div>
+
+    <div class="wrapper">
+        
+        <div class="envelope-container" id="envelopeContainer" onclick="openLetter()">
+            <div class="envelope">
+                <div class="heart"></div>
+            </div>
+        </div>
+
+        <div class="dialogue-box" id="dialogueBox">
+            <h1>Hi Sharr ✨</h1>
+            <p id="messageText">Loading message...</p>
+        </div>
+
+    </div>
+
+    <script>
+        // =======================================================
+        // ====== 🖋️ EDIT YOUR DAILY MESSAGE INSIDE HERE 🖋️ ======
+        // =======================================================
+        
+        const dailyMessage = "As a fellow software engineer this one of the smallest gestures I can show you. I know there have been people who have had much grand gestures but I promise you to not break your heart and take care of you and your feelings. I LOVE YOU SHAR";
+        
+        // =======================================================
+        // =======================================================
+
+        // Automatically inject your message into the layout
+        document.getElementById('messageText').textContent = dailyMessage;
+
+        // Function that handles the opening animation sequence
+        function openLetter() {
+            const envelope = document.getElementById('envelopeContainer');
+            const box = document.getElementById('dialogueBox');
+            const bg = document.getElementById('bg');
+
+            // Fade out the envelope
+            envelope.classList.add('hidden');
+            
+            // Softly blur the background collage slightly so text stands out perfectly
+            bg.style.filter = "blur(4px)";
+
+            // Bring the gorgeous sky blue letter into view
+            setTimeout(() => {
+                envelope.style.display = 'none';
+                box.classList.add('show-box');
+            }, 300);
+        }
+    </script>
+</body>
+</html>
