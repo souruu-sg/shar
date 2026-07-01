@@ -37,7 +37,7 @@
             background-position: center;
             background-repeat: no-repeat;
             transition: filter 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-            z-index: 1; /* Moved up to guarantee visibility context */
+            z-index: 1;
         }
 
         /* Fixed Vignette Stack Hierarchy */
@@ -60,7 +60,7 @@
             .background { background-image: url('assets/bg-mobile.jpg'); }
         }
 
-        /* Main Content wrapper moved to top layer stacking index */
+        /* Main Content wrapper */
         .wrapper {
             display: flex;
             justify-content: center;
@@ -188,7 +188,112 @@
             letter-spacing: -0.1px;
         }
 
-        /* Animation States */
+        /* Interaction Panel Elements */
+        .divider {
+            width: 100%;
+            height: 1px;
+            background: rgba(15, 23, 42, 0.08);
+            margin: 24px 0;
+        }
+
+        .interaction-panel {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 60px;
+        }
+
+        /* State A: Input Styling */
+        .input-container {
+            width: 100%;
+            display: flex;
+            background: rgba(15, 23, 42, 0.04);
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            border-radius: 12px;
+            padding: 6px 6px 6px 14px;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .input-container:focus-within {
+            background: rgba(255, 255, 255, 0.6);
+            border-color: rgba(225, 29, 72, 0.3);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .response-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            color: #0f172a;
+        }
+
+        .response-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .submit-btn {
+            background: #e11d48;
+            color: #ffffff;
+            border: none;
+            outline: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            background: #be123c;
+        }
+
+        /* State B: Saved Box Display Layout */
+        .display-container {
+            width: 100%;
+            text-align: center;
+        }
+
+        .display-text {
+            font-size: 0.95rem;
+            color: #334155;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        .display-text span {
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        .edit-btn {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #64748b;
+            text-decoration: none;
+            cursor: pointer;
+            background: none;
+            border: none;
+            transition: color 0.2s ease;
+        }
+
+        .edit-btn:hover {
+            color: #e11d48;
+        }
+
+        /* Global Structural Utilities */
+        .hidden-element {
+            display: none !important;
+        }
+
+        /* Animation Layout Elements */
         .hidden {
             opacity: 0 !important;
             transform: scale(0.9) !important;
@@ -204,7 +309,6 @@
 </head>
 <body>
 
-    <!-- Target Element -->
     <div class="background" id="bg"></div>
 
     <div class="wrapper">
@@ -218,14 +322,42 @@
         <div class="dialogue-box" id="dialogueBox">
             <h1>Hi Sharr ❤️</h1>
             <p id="messageText">Loading message...</p>
+            
+            <div class="divider"></div>
+
+            <div class="interaction-panel">
+                
+                <div class="input-container" id="inputState">
+                    <input type="text" id="responseField" class="response-input" placeholder="Type a response..." maxlength="150">
+                    <button class="submit-btn" onclick="saveResponse()">Ok</button>
+                </div>
+
+                <div class="display-container hidden-element" id="displayState">
+                    <p class="display-text">Shar: "<span id="savedResponseText"></span>"</p>
+                    <button class="edit-btn" onclick="switchToEditMode()">Edit Response</button>
+                </div>
+
+            </div>
         </div>
 
     </div>
 
     <script>
-        const dailyMessage = "As a fellow software engineer this is one of the smallest gestures I can show you. This is just the beginning of us and I wanna make this one count. I LOVE YOU SHAR ";
+        const dailyMessage = " Good morninggg, you are supposed to see this as you wake up, so if you are seeing it before that, not my fault. Hehehe";
 
         document.getElementById('messageText').textContent = dailyMessage;
+
+        // BUG FIX: Wrap execution inside DOMContentLoaded listener to ensure HTML nodes exist
+        document.addEventListener('DOMContentLoaded', () => {
+            setupInteractionState();
+
+            // BUG FIX: Support pressing the "Enter" key inside text fields gracefully
+            document.getElementById('responseField').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    saveResponse();
+                }
+            });
+        });
 
         function openLetter() {
             const envelope = document.getElementById('envelopeContainer');
@@ -241,6 +373,55 @@
                 envelope.style.display = 'none';
                 box.classList.add('show-box');
             }, 300);
+        }
+
+        // Logic routing based on active Cache values
+        function setupInteractionState() {
+            const savedData = localStorage.getItem('shar_response');
+            const inputState = document.getElementById('inputState');
+            const displayState = document.getElementById('displayState');
+            const savedTextContainer = document.getElementById('savedResponseText');
+
+            if (savedData && savedData.trim() !== "") {
+                savedTextContainer.textContent = savedData;
+                inputState.classList.add('hidden-element');
+                displayState.classList.remove('hidden-element');
+            } else {
+                inputState.classList.remove('hidden-element');
+                displayState.classList.add('hidden-element');
+            }
+        }
+
+        // Action Trigger: Write data structure changes down into storage layer
+        function saveResponse() {
+            const inputField = document.getElementById('responseField');
+            const message = inputField.value.trim();
+
+            if (message === "") return; 
+
+            localStorage.setItem('shar_response', message);
+            setupInteractionState();
+        }
+
+        // Action Trigger: Transition layout architecture back into editable form
+        function switchToEditMode() {
+            const savedData = localStorage.getItem('shar_response');
+            const inputField = document.getElementById('responseField');
+            
+            if (savedData) {
+                inputField.value = savedData;
+            }
+
+            const inputState = document.getElementById('inputState');
+            const displayState = document.getElementById('displayState');
+
+            displayState.classList.add('hidden-element');
+            inputState.classList.remove('hidden-element');
+            
+            // Auto-focus the field for quick editing
+            setTimeout(() => {
+                inputField.focus();
+            }, 50);
         }
     </script>
 </body>
