@@ -266,9 +266,17 @@
         /* ---------- Content ---------- */
         .content-scroll {
             overflow-y: auto;
+            flex: 1;
+            min-height: 0;
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 6px;
+        }
+
+        #dynamicArea {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
 
         h1 {
@@ -298,9 +306,15 @@
             letter-spacing: -0.1px;
         }
 
-        #messageText.empty { font-style: italic; color: #94a3b8; }
+        .empty { font-style: italic; color: #94a3b8; }
 
-        .response-section textarea {
+        .message-display {
+            margin-bottom: 8px;
+        }
+
+        #dynamicArea .section-label:not(:first-child) { margin-top: 14px; }
+
+        #dynamicArea textarea {
             width: 100%;
             min-height: 90px;
             resize: vertical;
@@ -311,14 +325,31 @@
             outline: none;
             transition: border-color 0.2s ease;
         }
-        .response-section textarea:focus { border-color: #e11d48; }
+        #dynamicArea textarea:focus { border-color: #e11d48; }
 
-        .response-footer {
+        /* ---------- Footer row ---------- */
+        .footer-row {
+            flex-shrink: 0;
             display: flex;
             align-items: center;
-            justify-content: flex-end;
+            justify-content: space-between;
             gap: 12px;
-            margin-top: 10px;
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(15, 23, 42, 0.08);
+        }
+
+        .day-counter {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #0f172a;
+            white-space: nowrap;
+        }
+
+        .footer-action {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .status-text {
@@ -372,19 +403,13 @@
             <hr class="divider">
 
             <div class="content-scroll">
-                <div>
-                    <h1 id="selectedDateHeading">Hi Sharr &#10084;&#65039;</h1>
-                    <p id="messageText">Loading message...</p>
-                </div>
+                <h1 id="selectedDateHeading">Hi Sharr &#10084;&#65039;</h1>
+                <div id="dynamicArea"></div>
+            </div>
 
-                <div class="response-section">
-                    <div class="section-label">Your reply</div>
-                    <textarea id="responseInput" placeholder="Write your reply for this day..."></textarea>
-                    <div class="response-footer">
-                        <span class="status-text" id="statusText">Saved</span>
-                        <button class="save-btn" id="saveBtn">Save reply</button>
-                    </div>
-                </div>
+            <div class="footer-row">
+                <span class="day-counter" id="dayCounter"></span>
+                <div class="footer-action" id="footerAction"></div>
             </div>
 
         </div>
@@ -397,6 +422,9 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_uOd8Vp60Ep4iNC3ZPTe5AA_-KBhI_T2';
 
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // The year you two started on June 28th. Update this to the real year.
+        const RELATIONSHIP_START_YEAR = 2023;
 
         // ---------- State ----------
         function stripTime(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
@@ -420,11 +448,10 @@
         const dateCells = document.getElementById('dateCells');
         const prevDateBtn = document.getElementById('prevDate');
         const nextDateBtn = document.getElementById('nextDate');
-        const messageText = document.getElementById('messageText');
         const selectedDateHeading = document.getElementById('selectedDateHeading');
-        const responseInput = document.getElementById('responseInput');
-        const saveBtn = document.getElementById('saveBtn');
-        const statusText = document.getElementById('statusText');
+        const dynamicArea = document.getElementById('dynamicArea');
+        const footerAction = document.getElementById('footerAction');
+        const dayCounterEl = document.getElementById('dayCounter');
         const reloadBtn = document.getElementById('reloadBtn');
 
         const weekdayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -476,16 +503,91 @@
             }
         }
 
+        function isFutureDate(d) {
+            return d.getTime() > TODAY.getTime();
+        }
+
+        function makeStatusSpan() {
+            const span = document.createElement('span');
+            span.className = 'status-text';
+            span.id = 'statusText';
+            return span;
+        }
+
+        function showStatus(span, text, ok) {
+            span.textContent = text;
+            span.style.color = ok ? '#16a34a' : '#dc2626';
+            span.classList.add('show');
+        }
+
         function renderContent(row) {
-            if (row && row.message) {
-                messageText.textContent = row.message;
-                messageText.classList.remove('empty');
-            } else {
-                messageText.textContent = 'No message for this day';
-                messageText.classList.add('empty');
+            dynamicArea.innerHTML = '';
+            footerAction.innerHTML = '';
+
+            if (isFutureDate(selectedDate)) {
+                const p = document.createElement('p');
+                p.className = 'empty';
+                p.textContent = "This day hasn't happened yet.";
+                dynamicArea.appendChild(p);
+                return;
             }
-            responseInput.value = (row && row.response) ? row.response : '';
-            statusText.classList.remove('show');
+
+            const hasMessage = !!(row && row.message && row.message.trim().length > 0);
+
+            if (!hasMessage) {
+                // No message yet for this (past/today) date — allow entering one.
+                const label = document.createElement('div');
+                label.className = 'section-label';
+                label.textContent = "Write the message for this day";
+                const textarea = document.createElement('textarea');
+                textarea.id = 'messageInput';
+                textarea.placeholder = 'Write a message for this day...';
+                dynamicArea.appendChild(label);
+                dynamicArea.appendChild(textarea);
+
+                const status = makeStatusSpan();
+                const btn = document.createElement('button');
+                btn.className = 'save-btn';
+                btn.textContent = 'Save message';
+                btn.addEventListener('click', () => saveMessage(textarea, status, btn));
+                footerAction.appendChild(status);
+                footerAction.appendChild(btn);
+            } else {
+                // Message already exists — show it read-only, no editing.
+                const mLabel = document.createElement('div');
+                mLabel.className = 'section-label';
+                mLabel.textContent = "Message";
+                const mText = document.createElement('p');
+                mText.className = 'message-display';
+                mText.textContent = row.message;
+                dynamicArea.appendChild(mLabel);
+                dynamicArea.appendChild(mText);
+
+                // Reply section
+                const rLabel = document.createElement('div');
+                rLabel.className = 'section-label';
+                rLabel.textContent = 'Reply';
+                const rTextarea = document.createElement('textarea');
+                rTextarea.id = 'responseInput';
+                rTextarea.placeholder = 'Write your reply for this day...';
+                rTextarea.value = row.response || '';
+                dynamicArea.appendChild(rLabel);
+                dynamicArea.appendChild(rTextarea);
+
+                const status = makeStatusSpan();
+                const btn = document.createElement('button');
+                btn.className = 'save-btn';
+                btn.textContent = 'Save reply';
+                btn.addEventListener('click', () => saveResponse(rTextarea, status, btn));
+                footerAction.appendChild(status);
+                footerAction.appendChild(btn);
+            }
+        }
+
+        function renderDayCounter() {
+            const start = new Date(RELATIONSHIP_START_YEAR, 5, 28); // June 28
+            const diffDays = Math.floor((TODAY - start) / (1000 * 60 * 60 * 24)) + 1;
+            dayCounterEl.textContent = (diffDays > 0 ? diffDays : 0) + ' days together \u2764\ufe0f';
         }
 
         function renderAll() {
@@ -498,13 +600,16 @@
         // ---------- Data ----------
         async function loadRow(date) {
             const key = toKey(date);
+            if (isFutureDate(date)) {
+                renderContent(null);
+                return;
+            }
             if (rowCache.hasOwnProperty(key)) {
                 renderContent(rowCache[key]);
                 return;
             }
-            messageText.textContent = 'Loading message...';
-            messageText.classList.remove('empty');
-            responseInput.value = '';
+            dynamicArea.innerHTML = '<p class="empty">Loading...</p>';
+            footerAction.innerHTML = '';
 
             const { data, error } = await supabaseClient
                 .from('daily_messages')
@@ -514,8 +619,7 @@
 
             if (error) {
                 console.error('Failed to load message:', error);
-                messageText.textContent = 'Could not load message right now.';
-                messageText.classList.add('empty');
+                dynamicArea.innerHTML = '<p class="empty">Could not load this day right now.</p>';
                 rowCache[key] = null;
                 return;
             }
@@ -524,33 +628,52 @@
             if (toKey(selectedDate) === key) renderContent(rowCache[key]);
         }
 
-        async function saveResponse() {
+        async function saveMessage(textarea, status, btn) {
             const key = toKey(selectedDate);
-            const value = responseInput.value;
+            const value = textarea.value.trim();
+            if (!value) {
+                showStatus(status, 'Write something first.', false);
+                return;
+            }
 
-            saveBtn.disabled = true;
-            statusText.classList.remove('show');
+            btn.disabled = true;
+            const { data, error } = await supabaseClient
+                .from('daily_messages')
+                .upsert({ date: key, message: value }, { onConflict: 'date' })
+                .select('date, message, response')
+                .maybeSingle();
+            btn.disabled = false;
 
+            if (error) {
+                console.error('Failed to save message:', error);
+                showStatus(status, 'Could not save. Try again.', false);
+                return;
+            }
+
+            rowCache[key] = data;
+            if (toKey(selectedDate) === key) renderContent(rowCache[key]);
+        }
+
+        async function saveResponse(textarea, status, btn) {
+            const key = toKey(selectedDate);
+            const value = textarea.value;
+
+            btn.disabled = true;
             const { data, error } = await supabaseClient
                 .from('daily_messages')
                 .upsert({ date: key, response: value }, { onConflict: 'date' })
                 .select('date, message, response')
                 .maybeSingle();
-
-            saveBtn.disabled = false;
+            btn.disabled = false;
 
             if (error) {
                 console.error('Failed to save reply:', error);
-                statusText.textContent = 'Could not save. Try again.';
-                statusText.style.color = '#dc2626';
-                statusText.classList.add('show');
+                showStatus(status, 'Could not save. Try again.', false);
                 return;
             }
 
-            if (data) rowCache[key] = data;
-            statusText.textContent = 'Saved';
-            statusText.style.color = '#16a34a';
-            statusText.classList.add('show');
+            rowCache[key] = data;
+            showStatus(status, 'Saved', true);
         }
 
         // ---------- Navigation ----------
@@ -579,10 +702,10 @@
             selectDate(new Date(y, m - 1, d));
         });
 
-        saveBtn.addEventListener('click', saveResponse);
         reloadBtn.addEventListener('click', () => window.location.reload());
 
         // ---------- Init ----------
+        renderDayCounter();
         renderAll();
         loadRow(selectedDate);
     </script>
