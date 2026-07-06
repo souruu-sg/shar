@@ -73,10 +73,10 @@
         /* ---------- Background ---------- */
         .background {
             position: fixed;
-            top: 0;
+            top: 64px;
             left: 0;
             width: 100vw;
-            height: 100vh;
+            height: calc(100vh - 64px);
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -419,12 +419,12 @@
         // ---------- Supabase setup ----------
         // Fill these in with your Supabase project details.
         const SUPABASE_URL = 'https://zoqouggrrkzmvspbmdts.supabase.co/rest/v1/';
-        const SUPABASE_ANON_KEY = 'sb_publishable_uOd8Vp60Ep4iNC3ZPTe5AA_-KBhI_T2';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvcW91Z2dycmt6bXZzcGJtZHRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyOTU5NzQsImV4cCI6MjA5ODg3MTk3NH0.wm5eqX1D4vM7-wdOtTZyQVFW1o-8dwXWbotgal9C9iw';
 
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // The year you two started on June 28th. Update this to the real year.
-        const RELATIONSHIP_START_YEAR = 2023;
+        // The year you two started on June 28th.
+        const RELATIONSHIP_START_YEAR = 2026;
 
         // ---------- State ----------
         function stripTime(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
@@ -586,7 +586,7 @@
 
         function renderDayCounter() {
             const start = new Date(RELATIONSHIP_START_YEAR, 5, 28); // June 28
-            const diffDays = Math.floor((TODAY - start) / (1000 * 60 * 60 * 24)) + 1;
+            const diffDays = Math.floor((TODAY - start) / (1000 * 60 * 60 * 24));
             dayCounterEl.textContent = (diffDays > 0 ? diffDays : 0) + ' days together \u2764\ufe0f';
         }
 
@@ -646,7 +646,7 @@
 
             if (error) {
                 console.error('Failed to save message:', error);
-                showStatus(status, 'Could not save. Try again.', false);
+                showStatus(status, 'Error: ' + (error.message || 'unknown'), false);
                 return;
             }
 
@@ -668,7 +668,7 @@
 
             if (error) {
                 console.error('Failed to save reply:', error);
-                showStatus(status, 'Could not save. Try again.', false);
+                showStatus(status, 'Error: ' + (error.message || 'unknown'), false);
                 return;
             }
 
