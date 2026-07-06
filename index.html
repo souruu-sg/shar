@@ -3,19 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>For Shar ❤️</title>
-    
+    <title>Sourav &amp; Shar</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+
+    <!-- Supabase client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        /* Reset & Layout Fixes */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body, html {
             height: 100%;
@@ -26,7 +24,53 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Dynamic Backgrounds */
+        /* ---------- Top bar ---------- */
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 64px;
+            background: #ffffff;
+            z-index: 50;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+        }
+
+        .topbar-title {
+            grid-column: 2;
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.15rem;
+            color: #0f172a;
+            letter-spacing: 0.2px;
+            white-space: nowrap;
+        }
+
+        .reload-btn {
+            grid-column: 3;
+            justify-self: end;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            color: #334155;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.3s ease;
+        }
+
+        .reload-btn:hover { background: #eef2f7; }
+        .reload-btn:active { transform: rotate(180deg); }
+
+        /* ---------- Background ---------- */
         .background {
             position: fixed;
             top: 0;
@@ -36,18 +80,14 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            transition: filter 0.6s cubic-bezier(0.25, 1, 0.5, 1);
             z-index: 1;
         }
 
-        /* Fixed Vignette Stack Hierarchy */
         .background::after {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: radial-gradient(circle, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.45) 100%);
             z-index: 2;
         }
@@ -55,192 +95,496 @@
         @media (min-width: 769px) {
             .background { background-image: url('assets/bg-desktop.jpg'); }
         }
-
         @media (max-width: 768px) {
             .background { background-image: url('assets/bg-mobile.jpg'); }
         }
 
-        /* Main Content wrapper */
+        /* ---------- Wrapper ---------- */
         .wrapper {
             display: flex;
             justify-content: center;
             align-items: center;
             width: 100%;
             height: 100%;
-            padding: 24px;
+            padding: 84px 24px 24px;
             position: relative;
-            z-index: 10; 
+            z-index: 10;
         }
 
-        /* Minimalistic Envelope Styling */
-        .envelope-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
-        }
-
-        .envelope-container:hover {
-            transform: scale(1.05);
-        }
-
-        .envelope {
-            width: 120px;
-            height: 80px;
-            background: #ffffff;
-            border-radius: 4px;
-            position: relative;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* Minimalistic Flat Flap */
-        .envelope::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            border-left: 60px solid transparent;
-            border-right: 60px solid transparent;
-            border-top: 42px solid #f1f5f9;
-            border-radius: 4px 4px 0 0;
-        }
-
-        /* Classy Heart Indicator */
-        .heart {
-            width: 22px;
-            height: 22px;
-            background-color: #e11d48;
-            position: absolute;
-            top: 45%;
-            transform: rotate(-45deg);
-            animation: elegantPulse 2s infinite ease-in-out;
-            z-index: 3;
-        }
-
-        .heart::before, .heart::after {
-            content: "";
-            background-color: #e11d48;
-            border-radius: 50%;
-            position: absolute;
-            width: 22px;
-            height: 22px;
-        }
-
-        .heart::before { top: -11px; left: 0; }
-        .heart::after { left: 11px; top: 0; }
-
-        @keyframes elegantPulse {
-            0% { transform: scale(0.95) rotate(-45deg); opacity: 0.9; }
-            50% { transform: scale(1.08) rotate(-45deg); opacity: 1; }
-            100% { transform: scale(0.95) rotate(-45deg); opacity: 0.9; }
-        }
-
-        /* Classy Frosted Sky-Blue Dialogue Box */
+        /* ---------- Dialogue box ---------- */
         .dialogue-box {
-            position: absolute;
             width: 460px;
-            min-height: 200px;
-            background: rgba(240, 249, 255, 0.78); 
+            max-height: calc(100vh - 108px);
+            background: rgba(240, 249, 255, 0.86);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.6);
             border-radius: 24px;
-            padding: 40px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255,255,255,0.5);
+            padding: 28px 30px 26px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255,255,255,0.5);
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            opacity: 0;
-            transform: translateY(20px) scale(0.95);
-            pointer-events: none;
-            transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
         }
 
         @media (max-width: 480px) {
-            .dialogue-box {
-                width: 92%;
-                padding: 32px 24px;
-            }
+            .dialogue-box { width: 92%; padding: 22px 18px 20px; }
         }
 
-        /* Typography Styles */
+        /* ---------- Nav header (month/year + today) ---------- */
+        .nav-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .month-year-btn {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: #0f172a;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+        }
+        .month-year-btn:hover { background: rgba(15, 23, 42, 0.06); }
+
+        .hidden-date-input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .today-chip {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #e11d48;
+            background: rgba(225, 29, 72, 0.08);
+            border: 1px solid rgba(225, 29, 72, 0.25);
+            border-radius: 999px;
+            padding: 6px 12px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.2s ease;
+        }
+        .today-chip:hover { background: rgba(225, 29, 72, 0.15); }
+        .today-chip.is-current { opacity: 0.45; pointer-events: none; }
+
+        /* ---------- Date strip ---------- */
+        .date-strip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 18px;
+        }
+
+        .arrow {
+            flex: 0 0 auto;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(15, 23, 42, 0.06);
+            color: #334155;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease;
+        }
+        .arrow:hover { background: rgba(15, 23, 42, 0.12); }
+
+        .date-cells {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            gap: 4px;
+            overflow: hidden;
+        }
+
+        .date-cell {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 2px;
+            border-radius: 14px;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            transition: background 0.2s ease;
+        }
+        .date-cell:hover { background: rgba(15, 23, 42, 0.05); }
+
+        .date-cell .weekday {
+            font-size: 0.68rem;
+            font-weight: 500;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .date-cell .day-num {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .date-cell.anniversary .day-num { color: #2563eb; }
+
+        .date-cell.selected .day-num {
+            background: #e11d48;
+            color: #ffffff;
+        }
+        .date-cell.selected.anniversary .day-num { color: #bfdbfe; }
+
+        .date-cell.selected .weekday { color: #0f172a; font-weight: 600; }
+
+        /* ---------- Divider ---------- */
+        .divider {
+            border: none;
+            height: 1px;
+            background: rgba(15, 23, 42, 0.1);
+            margin-bottom: 18px;
+        }
+
+        /* ---------- Content ---------- */
+        .content-scroll {
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
         h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 2.2rem;
+            font-size: 1.7rem;
             font-weight: 600;
-            margin-bottom: 20px;
             color: #0f172a;
             letter-spacing: -0.5px;
+            margin-bottom: 6px;
         }
 
-        p {
+        .section-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+
+        p, textarea {
             font-family: 'Inter', sans-serif;
             font-size: 1rem;
-            line-height: 1.65;
+            line-height: 1.6;
             font-weight: 400;
             color: #334155;
             letter-spacing: -0.1px;
         }
 
-        /* Animation Layout Elements */
-        .hidden {
-            opacity: 0 !important;
-            transform: scale(0.9) !important;
-            pointer-events: none !important;
+        #messageText.empty { font-style: italic; color: #94a3b8; }
+
+        .response-section textarea {
+            width: 100%;
+            min-height: 90px;
+            resize: vertical;
+            border-radius: 14px;
+            border: 1px solid rgba(15, 23, 42, 0.15);
+            background: rgba(255, 255, 255, 0.7);
+            padding: 12px 14px;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+        .response-section textarea:focus { border-color: #e11d48; }
+
+        .response-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 10px;
         }
 
-        .show-box {
-            opacity: 1 !important;
-            transform: translateY(0) scale(1) !important;
-            pointer-events: auto !important;
+        .status-text {
+            font-size: 0.8rem;
+            color: #16a34a;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
+        .status-text.show { opacity: 1; }
+
+        .save-btn {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #ffffff;
+            background: #e11d48;
+            border: none;
+            border-radius: 999px;
+            padding: 9px 20px;
+            cursor: pointer;
+            transition: background 0.2s ease, opacity 0.2s ease;
+        }
+        .save-btn:hover { background: #c81640; }
+        .save-btn:disabled { opacity: 0.6; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
+    <div class="topbar">
+        <div class="topbar-title">Sourav &amp; Shar</div>
+        <button class="reload-btn" id="reloadBtn" title="Reload">&#8635;</button>
+    </div>
+
     <div class="background" id="bg"></div>
 
     <div class="wrapper">
-        
-        <div class="envelope-container" id="envelopeContainer" onclick="openLetter()">
-            <div class="envelope">
-                <div class="heart"></div>
+        <div class="dialogue-box">
+
+            <div class="nav-header">
+                <button class="month-year-btn" id="monthYearBtn">Month Year</button>
+                <input type="date" id="datePicker" class="hidden-date-input">
+                <button class="today-chip" id="todayChip">Today</button>
             </div>
-        </div>
 
-        <div class="dialogue-box" id="dialogueBox">
-            <h1>Hi Sharr ❤️</h1>
-            <p id="messageText">Loading message...</p>
-        </div>
+            <div class="date-strip">
+                <button class="arrow" id="prevDate">&#8249;</button>
+                <div class="date-cells" id="dateCells"></div>
+                <button class="arrow" id="nextDate">&#8250;</button>
+            </div>
 
+            <hr class="divider">
+
+            <div class="content-scroll">
+                <div>
+                    <h1 id="selectedDateHeading">Hi Sharr &#10084;&#65039;</h1>
+                    <p id="messageText">Loading message...</p>
+                </div>
+
+                <div class="response-section">
+                    <div class="section-label">Your reply</div>
+                    <textarea id="responseInput" placeholder="Write your reply for this day..."></textarea>
+                    <div class="response-footer">
+                        <span class="status-text" id="statusText">Saved</span>
+                        <button class="save-btn" id="saveBtn">Save reply</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
 
     <script>
-        const dailyMessage = " Cuutuu, new updates coming soon here. Love you";
+        // ---------- Supabase setup ----------
+        // Fill these in with your Supabase project details.
+        const SUPABASE_URL = 'https://zoqouggrrkzmvspbmdts.supabase.co/rest/v1/';
+        const SUPABASE_ANON_KEY = 'sb_publishable_uOd8Vp60Ep4iNC3ZPTe5AA_-KBhI_T2';
 
-        document.getElementById('messageText').textContent = dailyMessage;
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        function openLetter() {
-            const envelope = document.getElementById('envelopeContainer');
-            const box = document.getElementById('dialogueBox');
-            const bg = document.getElementById('bg');
-
-            envelope.classList.add('hidden');
-            
-            // Optimized rendering engine transition
-            bg.style.filter = "blur(6px) brightness(0.85)";
-
-            setTimeout(() => {
-                envelope.style.display = 'none';
-                box.classList.add('show-box');
-            }, 300);
+        // ---------- State ----------
+        function stripTime(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+        function toKey(d) {
+            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
         }
+        function addDays(d, n) {
+            const copy = new Date(d);
+            copy.setDate(copy.getDate() + n);
+            return copy;
+        }
+
+        const TODAY = stripTime(new Date());
+        let selectedDate = stripTime(new Date());
+        const rowCache = {}; // dateKey -> { message, response } | null
+
+        // ---------- DOM refs ----------
+        const monthYearBtn = document.getElementById('monthYearBtn');
+        const datePicker = document.getElementById('datePicker');
+        const todayChip = document.getElementById('todayChip');
+        const dateCells = document.getElementById('dateCells');
+        const prevDateBtn = document.getElementById('prevDate');
+        const nextDateBtn = document.getElementById('nextDate');
+        const messageText = document.getElementById('messageText');
+        const selectedDateHeading = document.getElementById('selectedDateHeading');
+        const responseInput = document.getElementById('responseInput');
+        const saveBtn = document.getElementById('saveBtn');
+        const statusText = document.getElementById('statusText');
+        const reloadBtn = document.getElementById('reloadBtn');
+
+        const weekdayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+        // ---------- Rendering ----------
+        function renderMonthYear() {
+            monthYearBtn.textContent = selectedDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+        }
+
+        function renderTodayChip() {
+            const isToday = toKey(selectedDate) === toKey(TODAY);
+            todayChip.classList.toggle('is-current', isToday);
+            todayChip.textContent = 'Today · ' + TODAY.getDate() + ' ' + TODAY.toLocaleString('default', { month: 'short' });
+        }
+
+        function renderStrip() {
+            dateCells.innerHTML = '';
+            // selected date sits as the 2nd of 4 visible cells
+            const start = addDays(selectedDate, -1);
+            for (let i = 0; i < 4; i++) {
+                const d = addDays(start, i);
+                const key = toKey(d);
+                const cell = document.createElement('button');
+                cell.className = 'date-cell';
+                if (d.getDate() === 28) cell.classList.add('anniversary');
+                if (key === toKey(selectedDate)) cell.classList.add('selected');
+
+                const weekday = document.createElement('span');
+                weekday.className = 'weekday';
+                weekday.textContent = weekdayNames[d.getDay()];
+
+                const dayNum = document.createElement('span');
+                dayNum.className = 'day-num';
+                dayNum.textContent = d.getDate();
+
+                cell.appendChild(weekday);
+                cell.appendChild(dayNum);
+                cell.addEventListener('click', () => selectDate(d));
+                dateCells.appendChild(cell);
+            }
+        }
+
+        function renderHeading() {
+            const key = toKey(selectedDate);
+            if (key === toKey(TODAY)) {
+                selectedDateHeading.textContent = 'Hi Sharr \u2764\ufe0f';
+            } else {
+                selectedDateHeading.textContent = selectedDate.toLocaleString('default', { month: 'short', day: 'numeric', year: 'numeric' });
+            }
+        }
+
+        function renderContent(row) {
+            if (row && row.message) {
+                messageText.textContent = row.message;
+                messageText.classList.remove('empty');
+            } else {
+                messageText.textContent = 'No message for this day';
+                messageText.classList.add('empty');
+            }
+            responseInput.value = (row && row.response) ? row.response : '';
+            statusText.classList.remove('show');
+        }
+
+        function renderAll() {
+            renderMonthYear();
+            renderTodayChip();
+            renderStrip();
+            renderHeading();
+        }
+
+        // ---------- Data ----------
+        async function loadRow(date) {
+            const key = toKey(date);
+            if (rowCache.hasOwnProperty(key)) {
+                renderContent(rowCache[key]);
+                return;
+            }
+            messageText.textContent = 'Loading message...';
+            messageText.classList.remove('empty');
+            responseInput.value = '';
+
+            const { data, error } = await supabaseClient
+                .from('daily_messages')
+                .select('date, message, response')
+                .eq('date', key)
+                .maybeSingle();
+
+            if (error) {
+                console.error('Failed to load message:', error);
+                messageText.textContent = 'Could not load message right now.';
+                messageText.classList.add('empty');
+                rowCache[key] = null;
+                return;
+            }
+
+            rowCache[key] = data || null;
+            if (toKey(selectedDate) === key) renderContent(rowCache[key]);
+        }
+
+        async function saveResponse() {
+            const key = toKey(selectedDate);
+            const value = responseInput.value;
+
+            saveBtn.disabled = true;
+            statusText.classList.remove('show');
+
+            const { data, error } = await supabaseClient
+                .from('daily_messages')
+                .upsert({ date: key, response: value }, { onConflict: 'date' })
+                .select('date, message, response')
+                .maybeSingle();
+
+            saveBtn.disabled = false;
+
+            if (error) {
+                console.error('Failed to save reply:', error);
+                statusText.textContent = 'Could not save. Try again.';
+                statusText.style.color = '#dc2626';
+                statusText.classList.add('show');
+                return;
+            }
+
+            if (data) rowCache[key] = data;
+            statusText.textContent = 'Saved';
+            statusText.style.color = '#16a34a';
+            statusText.classList.add('show');
+        }
+
+        // ---------- Navigation ----------
+        function selectDate(date) {
+            selectedDate = stripTime(date);
+            renderAll();
+            loadRow(selectedDate);
+        }
+
+        prevDateBtn.addEventListener('click', () => selectDate(addDays(selectedDate, -1)));
+        nextDateBtn.addEventListener('click', () => selectDate(addDays(selectedDate, 1)));
+        todayChip.addEventListener('click', () => selectDate(TODAY));
+
+        monthYearBtn.addEventListener('click', () => {
+            datePicker.value = toKey(selectedDate);
+            if (datePicker.showPicker) {
+                datePicker.showPicker();
+            } else {
+                datePicker.click();
+            }
+        });
+
+        datePicker.addEventListener('change', (e) => {
+            if (!e.target.value) return;
+            const [y, m, d] = e.target.value.split('-').map(Number);
+            selectDate(new Date(y, m - 1, d));
+        });
+
+        saveBtn.addEventListener('click', saveResponse);
+        reloadBtn.addEventListener('click', () => window.location.reload());
+
+        // ---------- Init ----------
+        renderAll();
+        loadRow(selectedDate);
     </script>
 </body>
 </html>
